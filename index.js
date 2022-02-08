@@ -84,9 +84,11 @@ class Cache {
 
 			// the node after the target node
 			targetNodeNext.next = key;
+			targetNodeNext.prev = lastHeadKey;
 
 
 		} else if (key !== thisBefore.head && key !== thisBefore.tail) {
+			// node is some place else in the middle
 			// target node variables
 			let targetNode     = thisAfter.cache[key];
 			let targetNodePrev = thisAfter.cache[targetNode.prev];
@@ -121,19 +123,6 @@ class linkedListNode {
 	}
 }
 
-// let c1 = new Cache(4);
-// c1.set('a', 'Hello');
-// c1.set('b', 'Hi');
-// c1.set('c', 'Shalom');
-// c1.set('d', 'Calimera');
-// console.log(c1.get('b')); // expected: undefined
-// console.log(c1.get('a')); // expected: 'Hello'
-// c1.set('e', 'Sayonara');
-// console.log(c1.get('c')); // expected: 'Shalom'
-// console.log(c1.get('b')); // expected: undefined
-// console.dir(c1.toObject()) // expected {d=>a=>e=>c}
-// console.dir(c1.toObject()) // expected {a=>c=>d=>b}
-
 let c1 = new Cache(4);
 c1.set('a', 'A');
 c1.set('b', 'B');
@@ -143,5 +132,6 @@ c1.get('a') // b-c-d-a
 c1.get('b') // c-d-a-b OK
 c1.set('e', 'E'); // d-a-b-e OK
 c1.get('c') // d-a-b-e OK
-c1.get('b') // d-a-e-b actual: d-b-e-b / d-e-a
+c1.get('b') // d-a-e-b OK
+c1.get('b') // d-a-e-b OK
 console.dir(c1.toObject())
