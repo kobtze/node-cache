@@ -54,7 +54,10 @@ class Cache {
 		thisAfter.head = key;
 		
 		// If key=tail
-		if (key === thisBefore.tail) {
+		if (key === thisBefore.head) {
+			// no sorting of any kind
+			
+		} else if (key === thisBefore.tail) {
 			// update 'globals'
 			thisAfter.tail = lastTail.next;
 			// update last tail node
@@ -64,17 +67,40 @@ class Cache {
 			lastTailsNext.prev = null;
 			// update last head node
 			lastHead.next = lastTailKey;
-		}
-		// else (key!=head && key!=tail)
-		if (key !== thisBefore.head && key !== thisBefore.tail) {
-			// update last tail
-			lastTail.next = thisBefore.cache[lastTailsNextKey].next;
-			// update last tail's next
-			lastTailsNext.next = null;
-			lastTailsNext.prev = thisBefore.head;
-			// update last head
-			lastHead.next = key;
-			lastHead.prev = thisBefore.tail;
+
+		} else if (key === thisBefore.cache[lastHeadKey].prev) {
+			// if target node is one before the head
+			// target node variables
+			let targetNode     = thisAfter.cache[key];
+			let targetNodePrev = thisAfter.cache[targetNode.prev];
+			let targetNodeNext = thisAfter.cache[targetNode.next];
+
+			// target node becomes first
+			targetNode.next = null;
+			targetNode.prev = lastHeadKey;
+
+			// the node before the target node
+			targetNodePrev.next = lastHeadKey;
+
+			// the node after the target node
+			targetNodeNext.next = key;
+
+
+		} else if (key !== thisBefore.head && key !== thisBefore.tail) {
+			// target node variables
+			let targetNode     = thisAfter.cache[key];
+			let targetNodePrev = thisAfter.cache[targetNode.prev];
+			let targetNodeNext = thisAfter.cache[targetNode.next];
+
+			// target node becomes first
+			targetNode.next = null;
+			targetNode.prev = lastHeadKey;
+
+			// the node before the target node
+			targetNodePrev.next = thisBefore.cache[key].next;
+
+			// the node after the target node
+			targetNodeNext.prev = thisBefore.cache[key].prev;
 		}
 
 		this.cache = thisAfter.cache;
@@ -95,13 +121,27 @@ class linkedListNode {
 	}
 }
 
+// let c1 = new Cache(4);
+// c1.set('a', 'Hello');
+// c1.set('b', 'Hi');
+// c1.set('c', 'Shalom');
+// c1.set('d', 'Calimera');
+// console.log(c1.get('b')); // expected: undefined
+// console.log(c1.get('a')); // expected: 'Hello'
+// c1.set('e', 'Sayonara');
+// console.log(c1.get('c')); // expected: 'Shalom'
+// console.log(c1.get('b')); // expected: undefined
+// console.dir(c1.toObject()) // expected {d=>a=>e=>c}
+// console.dir(c1.toObject()) // expected {a=>c=>d=>b}
+
 let c1 = new Cache(4);
-c1.set('a', 'Hello');
-c1.set('b', 'Hi');
-c1.set('c', 'Shalom');
-c1.set('d', 'Calimera');
-console.log(c1.get('a')); // expected: 'Hello'
-c1.set('e', 'Sayonara');
-console.log(c1.get('c')); // expected: 'Shalom'
-console.log(c1.get('b')); // expected: undefined
-console.dir(c1.toObject()) // expected {d=>a=>e=>c}
+c1.set('a', 'A');
+c1.set('b', 'B');
+c1.set('c', 'C');
+c1.set('d', 'D');
+c1.get('a') // b-c-d-a
+c1.get('b') // c-d-a-b OK
+c1.set('e', 'E'); // d-a-b-e OK
+c1.get('c') // d-a-b-e OK
+c1.get('b') // d-a-e-b actual: d-b-e-b / d-e-a
+console.dir(c1.toObject())
